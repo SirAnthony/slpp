@@ -14,7 +14,8 @@ class SLPP:
     def decode(self, text):
         if not text or type(text) is not str:
             return
-        reg = re.compile('---.*$', re.M)
+        #FIXME: only short comments removed
+        reg = re.compile('--.*$', re.M)
         text = reg.sub('', text, 0)
         self.text = text
         self.at, self.ch, self.depth = 0, '', 0
@@ -43,15 +44,16 @@ class SLPP:
         elif tp in [list, tuple, dict]:
             s += "%s{%s" % (tab * self.depth, newline)
             self.depth += 1
+            dp = tab * self.depth
             if tp is dict:
                 s += (',%s' % newline).join(
-                    [self.__encode(v) if type(k) is int \
-                        else '%s = %s' % (k, self.__encode(v)) \
+                    [ dp + self.__encode(v) if type(k) is int \
+                        else dp + '%s = %s' % (k, self.__encode(v)) \
                         for k, v in obj.iteritems()
                     ])
             else:
                 s += (',%s' % newline).join(
-                    [tab * self.depth + self.__encode(el) for el in obj])
+                    [dp + self.__encode(el) for el in obj])
             self.depth -= 1
             s += "%s%s}" % (newline, tab * self.depth)
         return s
@@ -168,7 +170,6 @@ class SLPP:
             if not self.ch or not self.ch.isdigit():
                 print "Malformed number %s(no digits after initial minus)" % self.ch
                 return 0
-            self.next_chr()
         while self.ch and self.ch.isdigit():
             n += self.ch
             self.next_chr()

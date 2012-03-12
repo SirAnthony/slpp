@@ -1,5 +1,5 @@
 #### SLPP
-SLPP is simple lua-python data structures parser.
+SLPP is a simple lua-python data structures parser.
 
 Lua data check:
 
