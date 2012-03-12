@@ -47,13 +47,13 @@ class SLPP:
             dp = tab * self.depth
             if tp is dict:
                 s += (',%s' % newline).join(
-                    [ dp + self.__encode(v) if type(k) is int \
+                    [self.__encode(v) if type(k) is int \
                         else dp + '%s = %s' % (k, self.__encode(v)) \
                         for k, v in obj.iteritems()
                     ])
             else:
                 s += (',%s' % newline).join(
-                    [dp + self.__encode(el) for el in obj])
+                    [self.__encode(el) for el in obj])
             self.depth -= 1
             s += "%s%s}" % (newline, tab * self.depth)
         return s
