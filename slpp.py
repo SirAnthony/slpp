@@ -79,27 +79,33 @@ class SLPP:
             return
         if self.ch == '{':
             return self.object()
-        if self.ch == '"':
-            return self.string()
+        if self.ch == "[":
+            self.next_chr()
+        if self.ch in ['"',  "'",  '[']:
+            return self.string(self.ch)
         if self.ch.isdigit() or self.ch == '-':
             return self.number()
         return self.word()
 
-    def string(self):
+    def string(self,  end=None):
         s = ''
-        if self.ch == '"':
+        start = self.ch
+        if end == '[':
+            end = ']'
+        if start in ['"',  "'",  '[']:
             while self.next_chr():
-                if self.ch == '"':
+                if self.ch == end:
                     self.next_chr()
-                    return str(s)
-                else:
-                    s += self.ch
+                    if start != "[" or self.ch == ']':
+                        return s
+                s += self.ch
         print "Unexpected end of string while parsing Lua string"
 
     def object(self):
         o = {}
         k = ''
         idx = 0
+        numeric_keys = False
         self.depth += 1
         self.next_chr()
         self.white()
@@ -119,19 +125,21 @@ class SLPP:
                     self.next_chr()
                     if k:
                        o[idx] = k
-                    if len([ key for key in o if type(key) is str ]) == 0:
+                    if not numeric_keys and len([ key for key in o if type(key) in (str,  float,  bool,  tuple)]) == 0:
                         ar = []
-                        for key in o: ar.insert(key, o[key])
+                        for key in o: 
+                           ar.insert(key, o[key])
                         o = ar
                     return o #or here
                 else:
-                    if self.ch == '"':
-                        k = self.string()
-                    elif self.ch == ',':
+                    if self.ch == ',':
                         self.next_chr()
                         continue
                     else:
                         k = self.value()
+                        if self.ch == ']':
+                            numeric_keys = True
+                            self.next_chr()
                     self.white()
                     if self.ch == '=':
                         self.next_chr()
@@ -159,6 +167,8 @@ class SLPP:
                     return True
                 elif re.match('^false$', s, re.I):
                     return False
+                elif s == 'nil':
+                    return None
                 return str(s)
 
     def number(self):
