@@ -10,6 +10,8 @@ class SLPP:
         self.depth = 0
         self.space = re.compile('\s', re.M)
         self.alnum = re.compile('\w', re.M)
+        self.newline = '\n'
+        self.tab = '\t'
 
     def decode(self, text):
         if not text or type(text) is not str:
@@ -32,8 +34,8 @@ class SLPP:
 
     def __encode(self, obj):
         s = ''
-        tab = '\t'
-        newline = '\n'
+        tab = self.tab
+        newline = self.newline
         tp = type(obj)
         if tp is str:
             s += '"%s"' % obj
@@ -42,10 +44,15 @@ class SLPP:
         elif tp is bool:
             s += str(obj).lower()
         elif tp in [list, tuple, dict]:
-            s += "%s{%s" % (tab * self.depth, newline)
             self.depth += 1
-            dp = tab * self.depth
-            if tp is dict:
+            if len(obj) == 0 or ( tp is not dict and len(filter( 
+                    lambda x:  type(x) in (int,  float,  long) \
+                    or (type(x) is str and len(x) < 10),  obj
+                )) == len(obj) ):
+                newline = tab = ''
+            dp = tab * self.depth            
+            s += "%s{%s" % (tab * (self.depth - 2), newline)
+            if tp is dict:                
                 s += (',%s' % newline).join(
                     [self.__encode(v) if type(k) is int \
                         else dp + '%s = %s' % (k, self.__encode(v)) \
@@ -53,7 +60,7 @@ class SLPP:
                     ])
             else:
                 s += (',%s' % newline).join(
-                    [self.__encode(el) for el in obj])
+                    [dp + self.__encode(el) for el in obj])
             self.depth -= 1
             s += "%s%s}" % (newline, tab * self.depth)
         return s
