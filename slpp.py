@@ -1,5 +1,18 @@
 import re
 
+ERRORS = {
+    'unexp_end_string': u'Unexpected end of string while parsing Lua string.',
+    'unexp_end_table': u'Unexpected end of table while parsing Lua string.',
+    'mfnumber_minus': u'Malformed number (no digits after initial minus).',
+    'mfnumber_dec_point': u'Malformed number (no digits after decimal point).',
+    'mfnumber_sci': u'Malformed number (bad scientific format).',
+}
+
+
+class ParseError(Exception):
+    pass
+
+
 class SLPP:
 
     def __init__(self):
@@ -45,14 +58,14 @@ class SLPP:
             s += str(obj).lower()
         elif tp in [list, tuple, dict]:
             self.depth += 1
-            if len(obj) == 0 or ( tp is not dict and len(filter( 
+            if len(obj) == 0 or ( tp is not dict and len(filter(
                     lambda x:  type(x) in (int,  float,  long) \
                     or (type(x) is str and len(x) < 10),  obj
                 )) == len(obj) ):
                 newline = tab = ''
-            dp = tab * self.depth            
+            dp = tab * self.depth
             s += "%s{%s" % (tab * (self.depth - 2), newline)
-            if tp is dict:                
+            if tp is dict:
                 s += (',%s' % newline).join(
                     [self.__encode(v) if type(k) is int \
                         else dp + '%s = %s' % (k, self.__encode(v)) \
@@ -106,7 +119,7 @@ class SLPP:
                     if start != "[" or self.ch == ']':
                         return s
                 s += self.ch
-        print "Unexpected end of string while parsing Lua string"
+        print ERRORS['unexp_end_string']
 
     def object(self):
         o = {}
@@ -134,7 +147,7 @@ class SLPP:
                        o[idx] = k
                     if not numeric_keys and len([ key for key in o if type(key) in (str,  float,  bool,  tuple)]) == 0:
                         ar = []
-                        for key in o: 
+                        for key in o:
                            ar.insert(key, o[key])
                         o = ar
                     return o #or here
@@ -160,7 +173,7 @@ class SLPP:
                         o[idx] = k
                         idx += 1
                         k = ''
-        print "Unexpected end of table while parsing Lua string."#Bad exit here
+        print ERRORS['unexp_end_table'] #Bad exit here
 
     def word(self):
         s = ''
@@ -179,32 +192,56 @@ class SLPP:
                 return str(s)
 
     def number(self):
-        n = ''
-        flt = False
-        if self.ch == '-':
-            n = '-'
+        def next_digit(err):
+            n = self.ch
             self.next_chr()
             if not self.ch or not self.ch.isdigit():
-                print "Malformed number %s(no digits after initial minus)" % self.ch
-                return 0
+                raise ParseError(err)
+            return n
+        n = ''
+        try:
+            if self.ch == '-':
+                n += next_digit(ERRORS['mfnumber_minus'])
+            n += self.digit()
+            if n == '0' and self.ch in ['x', 'X']:
+                n += self.ch
+                self.next_chr()
+                n += self.hex()
+            else:
+                if self.ch and self.ch == '.':
+                    n += next_digit(ERRORS['mfnumber_dec_point'])
+                    n += self.digit()
+                if self.ch and self.ch in ['e', 'E']:
+                    n += self.ch
+                    self.next_chr()
+                    if not self.ch or self.ch not in ('+', '-'):
+                        raise ParseError(ERRORS['mfnumber_sci'])
+                    n += next_digit(ERRORS['mfnumber_sci'])
+                    n += self.digit()
+        except ParseError as e:
+            print e
+            return 0
+        try:
+            return int(n, 0)
+        except:
+            pass
+        return float(n)
+
+    def digit(self):
+        n = ''
         while self.ch and self.ch.isdigit():
             n += self.ch
             self.next_chr()
-        if self.ch and self.ch == '.':
+        return n
+
+    def hex(self):
+        n = ''
+        while self.ch and \
+            (self.ch in 'ABCDEFabcdef' or self.ch.isdigit()):
             n += self.ch
-            flt = True
             self.next_chr()
-            if not self.ch or not self.ch.isdigit():
-                print "Malformed number %s (no digits after decimal point)" % self.ch
-                return n+'0'
-            else:
-                n += self.ch
-            while self.ch and self.ch.isdigit():
-                n += self.ch
-                self.next_chr()
-        if flt:
-            return float(n)
-        return int(n)
+        return n
+
 
 slpp = SLPP()
 
