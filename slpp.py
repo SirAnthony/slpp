@@ -107,7 +107,7 @@ class SLPP:
             return self.number()
         return self.word()
 
-    def string(self,  end=None):
+    def string(self, end=None):
         s = ''
         start = self.ch
         if end == '[':
@@ -118,6 +118,10 @@ class SLPP:
                     self.next_chr()
                     if start != "[" or self.ch == ']':
                         return s
+                if self.ch == '\\' and start == end:
+                    self.next_chr()
+                    if self.ch != end:
+                        s += '\\'
                 s += self.ch
         print ERRORS['unexp_end_string']
 

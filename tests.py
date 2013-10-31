@@ -125,6 +125,12 @@ def table_test():
     """
     pass
 
+def string_test():
+    r"""
+    Escape test:
+    >>> assert lua.decode(r"'test\'s string'") == "test's string"
+    """
+    pass
 
 def basic_test():
     """
