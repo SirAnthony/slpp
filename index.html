@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Slpp : Simple lua-python parser" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Slpp</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/SirAnthony/slpp">View on GitHub</a>
+
+          <h1 id="project_title">Slpp</h1>
+          <h2 id="project_tagline">Simple lua-python parser</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/SirAnthony/slpp/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/SirAnthony/slpp/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h4>
+<a name="slpp" class="anchor" href="#slpp"><span class="octicon octicon-link"></span></a>SLPP</h4>
+
+<p>SLPP is a simple lua-python data structures parser.</p>
+
+<p>Lua data check:</p>
+
+<div class="highlight highlight-lua"><pre><span class="n">data</span> <span class="o">=</span> <span class="s1">'</span><span class="s">{ array = { 65, 23, 5 }, dict = { string = "value", array = { 3, 6, 4}, mixed = { 43, 54.3, false, string = "value", 9 } } }'</span>
+<span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="nb">assert</span><span class="p">(</span><span class="nb">loadstring</span><span class="p">(</span><span class="s1">'</span><span class="s">return '</span> <span class="o">..</span> <span class="n">data</span><span class="p">))()</span>
+<span class="o">&gt;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">'</span><span class="s">dict'</span><span class="p">])</span> <span class="k">do</span> <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">end</span>
+<span class="n">mixed</span>   <span class="n">table</span><span class="p">:</span> <span class="mh">0x2014290</span>
+<span class="n">string</span>  <span class="n">value</span>
+<span class="n">array</span>   <span class="n">table</span><span class="p">:</span> <span class="mh">0x2014200</span>
+</pre></div>
+
+<p>Parse lua data:</p>
+
+<div class="highlight highlight-python"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">slpp</span> <span class="kn">import</span> <span class="n">slpp</span> <span class="k">as</span> <span class="n">lua</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">lua</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'{ array = { 65, 23, 5 }, dict = { string = "value", array = { 3, 6, 4}, mixed = { 43, 54.3, false, string = "value", 9 } } }'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">data</span>
+<span class="p">{</span><span class="s">'array'</span><span class="p">:</span> <span class="p">[</span><span class="mi">65</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="s">'dict'</span><span class="p">:</span> <span class="p">{</span><span class="s">'mixed'</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">54.33</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="s">'string'</span><span class="p">:</span> <span class="s">'value'</span><span class="p">},</span> <span class="s">'array'</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="s">'string'</span><span class="p">:</span> <span class="s">'value'</span><span class="p">}}</span>
+</pre></div>
+
+<p>Dump python object:</p>
+
+<div class="highlight highlight-python"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">lua</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="s">'{array = {65,23,5},dict = {mixed = {43,54.33,false,9,string = "value"},array = {3,6,4},string = "value"}}'</span>
+</pre></div>
+
+<p>Dump test:</p>
+
+<div class="highlight highlight-lua"><pre><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="nb">assert</span><span class="p">(</span><span class="nb">loadstring</span><span class="p">(</span><span class="s1">'</span><span class="s">return '</span> <span class="o">..</span> <span class="s1">'</span><span class="s">{array = {65,23,5,},dict = {mixed = {43,54.33,false,9,string = "value",},array = {3,6,4,},string = "value",},}'</span><span class="p">))()</span>
+<span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">'</span><span class="s">dict'</span><span class="p">])</span>
+<span class="n">table</span><span class="p">:</span> <span class="mh">0x1b64ea0</span>
+<span class="o">&gt;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">'</span><span class="s">dict'</span><span class="p">])</span> <span class="k">do</span> <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="k">end</span>
+<span class="n">mixed</span>   <span class="n">table</span><span class="p">:</span> <span class="mh">0x880afe0</span>
+<span class="n">array</span>   <span class="n">table</span><span class="p">:</span> <span class="mh">0x880af60</span>
+<span class="n">string</span>  <span class="n">value</span>
+</pre></div>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Slpp maintained by <a href="https://github.com/SirAnthony">SirAnthony</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
