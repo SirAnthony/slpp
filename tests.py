@@ -129,6 +129,9 @@ def string_test():
     r"""
     Escape test:
     >>> assert lua.decode(r"'test\'s string'") == "test's string"
+
+    Add escaping on encode:
+    >>> assert lua.encode({'a': 'func("call()");'}) == '{\n\ta = "func(\\"call()\\");"\n}'
     """
     pass
 
