@@ -122,6 +122,9 @@ def table_test():
 
     Values-only table:
     >>> assert lua.decode('{"10"}') == ["10"]
+
+    Last zero
+    >>> assert lua.decode('{0, 1, 0}') == [0,1,0]
     """
     pass
 

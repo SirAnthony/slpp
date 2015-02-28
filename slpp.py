@@ -127,7 +127,7 @@ class SLPP:
 
     def object(self):
         o = {}
-        k = ''
+        k = None
         idx = 0
         numeric_keys = False
         self.depth += 1
@@ -147,7 +147,7 @@ class SLPP:
                 elif self.ch == '}':
                     self.depth -= 1
                     self.next_chr()
-                    if k:
+                    if k is not None:
                        o[idx] = k
                     if not numeric_keys and len([ key for key in o if type(key) in (str,  float,  bool,  tuple)]) == 0:
                         ar = []
@@ -165,18 +165,16 @@ class SLPP:
                             numeric_keys = True
                             self.next_chr()
                     self.white()
-                    if self.ch == '=':
+                    ch = self.ch
+                    if ch in ('=', ','):
                         self.next_chr()
                         self.white()
-                        o[k] = self.value()
+                        if ch == '=':
+                            o[k] = self.value()
+                        else:
+                            o[idx] = k
                         idx += 1
-                        k = ''
-                    elif self.ch == ',':
-                        self.next_chr()
-                        self.white()
-                        o[idx] = k
-                        idx += 1
-                        k = ''
+                        k = None
         print ERRORS['unexp_end_table'] #Bad exit here
 
     def word(self):
