@@ -46,37 +46,40 @@ class SLPP:
         return self.__encode(obj)
 
     def __encode(self, obj):
-        s = ''
-        tab = self.tab
-        newline = self.newline
-        tp = type(obj)
-        if tp is str:
-            s += '"%s"' % obj.replace(r'"', r'\"')
-        elif tp in [int, float, long, complex]:
-            s += str(obj)
-        elif tp is bool:
-            s += str(obj).lower()
-        elif tp in [list, tuple, dict]:
-            self.depth += 1
-            if len(obj) == 0 or ( tp is not dict and len(filter(
-                    lambda x:  type(x) in (int,  float,  long) \
-                    or (type(x) is str and len(x) < 10),  obj
-                )) == len(obj) ):
-                newline = tab = ''
-            dp = tab * self.depth
-            s += "%s{%s" % (tab * (self.depth - 2), newline)
-            if tp is dict:
-                s += (',%s' % newline).join(
-                    [self.__encode(v) if type(k) is int \
-                        else dp + '%s = %s' % (k, self.__encode(v)) \
-                        for k, v in obj.iteritems()
-                    ])
-            else:
-                s += (',%s' % newline).join(
-                    [dp + self.__encode(el) for el in obj])
-            self.depth -= 1
-            s += "%s%s}" % (newline, tab * self.depth)
-        return s
+		s = ''
+		tab = self.tab
+		newline = self.newline
+		tp = type(obj)
+		if tp is str:
+			s += '"%s"' % obj.replace(r'"', r'\"')
+		elif tp in [int, float, long, complex]:
+			s += str(obj)
+		elif tp is bool:
+			s += str(obj).lower()
+		elif tp in [list, tuple, dict]:
+			self.depth += 1
+			if len(obj) == 0 or ( tp is not dict and len(filter(
+					lambda x:  type(x) in (int,  float,  long) \
+					or (type(x) is str and len(x) < 10),  obj
+				)) == len(obj) ):
+				newline = tab = ''
+			dp = tab * self.depth
+			s += "%s{%s" % (tab * (self.depth - 2), newline)
+			if tp is dict:
+				listtmp=[]
+				for k,v in obj.iteritems():
+					if type(k) is int:
+						self.__encode(v)
+					else:
+						listtmp.append(dp + '%s = %s' % (k, self.__encode(v)))
+				s += (',%s' % newline).join(listtmp)
+				
+			else:
+				s += (',%s' % newline).join(
+					[dp + self.__encode(el) for el in obj])
+			self.depth -= 1
+			s += "%s%s}" % (newline, tab * self.depth)
+		return s
 
     def white(self):
         while self.ch:
@@ -220,9 +223,10 @@ class SLPP:
                         raise ParseError(ERRORS['mfnumber_sci'])
                     n += next_digit(ERRORS['mfnumber_sci'])
                     n += self.digit()
-        except ParseError as e:
-            print e
-            return 0
+        except ParseError :
+			t, e = sys.exc_info()[:2]
+			print(e)
+			return 0
         try:
             return int(n, 0)
         except:
