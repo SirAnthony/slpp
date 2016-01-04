@@ -1,4 +1,5 @@
 import re
+import sys
 
 ERRORS = {
     'unexp_end_string': u'Unexpected end of string while parsing Lua string.',
