@@ -1,4 +1,5 @@
 import re
+import sys
 
 ERRORS = {
     'unexp_end_string': u'Unexpected end of string while parsing Lua string.',
@@ -13,7 +14,7 @@ class ParseError(Exception):
     pass
 
 
-class SLPP:
+class SLPP(object):
 
     def __init__(self):
         self.text = ''
@@ -66,11 +67,14 @@ class SLPP:
             dp = tab * self.depth
             s += "%s{%s" % (tab * (self.depth - 2), newline)
             if tp is dict:
-                s += (',%s' % newline).join(
-                    [self.__encode(v) if type(k) is int \
-                        else dp + '%s = %s' % (k, self.__encode(v)) \
-                        for k, v in obj.iteritems()
-                    ])
+                contents=[]
+                for k,v in obj.iteritems():
+                    if type(k) is int:
+                        contents.append(self.__encode(v))
+                    else:
+                        contents.append(dp + '%s = %s' % (k, self.__encode(v)))
+                s += (',%s' % newline).join(contents)
+                
             else:
                 s += (',%s' % newline).join(
                     [dp + self.__encode(el) for el in obj])
@@ -220,8 +224,9 @@ class SLPP:
                         raise ParseError(ERRORS['mfnumber_sci'])
                     n += next_digit(ERRORS['mfnumber_sci'])
                     n += self.digit()
-        except ParseError as e:
-            print e
+        except ParseError :
+            t, e = sys.exc_info()[:2]
+            print(e)
             return 0
         try:
             return int(n, 0)
