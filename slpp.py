@@ -67,8 +67,8 @@ class SLPP(object):
             dp = tab * self.depth
             s += "%s{%s" % (tab * (self.depth - 2), newline)
             if tp is dict:
-                contents=[]
-                for k,v in obj.iteritems():
+                contents = []
+                for k, v in obj.iteritems():
                     if type(k) is int:
                         contents.append(self.__encode(v))
                     else:
@@ -224,7 +224,7 @@ class SLPP(object):
                         raise ParseError(ERRORS['mfnumber_sci'])
                     n += next_digit(ERRORS['mfnumber_sci'])
                     n += self.digit()
-        except ParseError :
+        except ParseError:
             t, e = sys.exc_info()[:2]
             print(e)
             return 0
