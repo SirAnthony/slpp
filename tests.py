@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 from slpp import slpp as lua
 
@@ -145,6 +146,14 @@ def basic_test():
     >>> data = '{ array = { 65, 23, 5 }, dict = { string = "value", array = { 3, 6, 4}, mixed = { 43, 54.3, false, string = "value", 9 } } }'
     >>> d = lua.decode(data)
     >>> differ(d, lua.decode(lua.encode(d)))
+    """
+    pass
+
+
+def unicode_test():
+    ur"""
+    >>> assert lua.encode(u'Привет') == '"\xd0\x9f\xd1\x80\xd0\xb8\xd0\xb2\xd0\xb5\xd1\x82"'
+    >>> assert lua.encode({'s': u'Привет'}) == '{\n\ts = "Привет"\n}'
     """
     pass
 
