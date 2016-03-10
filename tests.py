@@ -113,6 +113,25 @@ def number_test():
     pass
 
 
+def test_bool():
+    """
+    >>> assert lua.decode('false') == False
+    >>> assert lua.decode('true') == True
+
+    >>> assert lua.encode(False) == 'false'
+    >>> assert lua.encode(True) == 'true'
+    """
+    pass
+
+
+def test_nil():
+    """
+    >>> assert lua.decode('nil') == None
+    >>> assert lua.encode(None) == 'nil'
+    """
+    pass
+
+
 def table_test():
     """
     Bracketed string key:
