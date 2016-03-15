@@ -60,7 +60,7 @@ def differ(value, origin):
             except KeyError:
                 raise AssertionError('''{0} not match original: {1};
 Key: {2}, item: {3}'''.format(value, origin, key, item))
-            return
+        return
 
     if isinstance(origin, basestring):
         assert value == origin, '{0} not match original: {1}.'.format(value, origin)
@@ -103,7 +103,7 @@ def number_test():
     >>> differ(lua.decode('''{      \
         ID = 0x74fa4cae,            \
         Version = 0x07c2,           \
-        Manfacturer = 0x21544948    \
+        Manufacturer = 0x21544948    \
     }'''), {                        \
         'ID': 0x74fa4cae,           \
         'Version': 0x07c2,          \
