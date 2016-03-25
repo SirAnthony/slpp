@@ -41,8 +41,6 @@ class SLPP(object):
         return result
 
     def encode(self, obj):
-        if not obj:
-            return
         self.depth = 0
         return self.__encode(obj)
 
@@ -59,6 +57,8 @@ class SLPP(object):
             s += str(obj)
         elif tp is bool:
             s += str(obj).lower()
+        elif obj is None:
+            s += 'nil'
         elif tp in [list, tuple, dict]:
             self.depth += 1
             if len(obj) == 0 or ( tp is not dict and len(filter(
@@ -186,18 +186,16 @@ class SLPP(object):
     def word(self):
         s = ''
         if self.ch != '\n':
-          s = self.ch
-        while self.next_chr():
-            if self.alnum.match(self.ch):
-                s += self.ch
-            else:
-                if re.match('^true$', s, re.I):
-                    return True
-                elif re.match('^false$', s, re.I):
-                    return False
-                elif s == 'nil':
-                    return None
-                return str(s)
+            s = self.ch
+
+        constants = {'true': True, 'false': False, 'nil': None}
+
+        self.next_chr()
+        while self.ch is not None and self.alnum.match(self.ch) and s not in constants:
+            s += self.ch
+            self.next_chr()
+
+        return constants.get(s, s)
 
     def number(self):
         def next_digit(err):
