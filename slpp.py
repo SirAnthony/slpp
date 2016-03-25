@@ -183,19 +183,16 @@ class SLPP(object):
                         k = None
         print ERRORS['unexp_end_table'] #Bad exit here
 
+    words = {'true': True, 'false': False, 'nil': None}
     def word(self):
         s = ''
         if self.ch != '\n':
             s = self.ch
-
-        constants = {'true': True, 'false': False, 'nil': None}
-
         self.next_chr()
-        while self.ch is not None and self.alnum.match(self.ch) and s not in constants:
+        while self.ch is not None and self.alnum.match(self.ch) and s not in words:
             s += self.ch
             self.next_chr()
-
-        return constants.get(s, s)
+        return words.get(s, s)
 
     def number(self):
         def next_digit(err):
