@@ -189,10 +189,10 @@ class SLPP(object):
         if self.ch != '\n':
             s = self.ch
         self.next_chr()
-        while self.ch is not None and self.alnum.match(self.ch) and s not in words:
+        while self.ch is not None and self.alnum.match(self.ch) and s not in self.words:
             s += self.ch
             self.next_chr()
-        return words.get(s, s)
+        return self.words.get(s, s)
 
     def number(self):
         def next_digit(err):
