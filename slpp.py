@@ -72,7 +72,10 @@ class SLPP(object):
                 contents = []
                 for k, v in obj.iteritems():
                     if type(k) is int:
-                        contents.append(self.__encode(v))
+                        if k == len(contents):
+                            contents.append(self.__encode(v))
+                        else:
+                            contents.append(dp + '[%d] = %s' % (k, self.__encode(v)))
                     else:
                         contents.append(dp + '%s = %s' % (k, self.__encode(v)))
                 s += (',%s' % newline).join(contents)
@@ -135,7 +138,6 @@ class SLPP(object):
         o = {}
         k = None
         idx = 0
-        numeric_keys = False
         self.depth += 1
         self.next_chr()
         self.white()
@@ -155,11 +157,13 @@ class SLPP(object):
                     self.next_chr()
                     if k is not None:
                        o[idx] = k
-                    if not numeric_keys and len([ key for key in o if isinstance(key, (str, unicode, float,  bool,  tuple))]) == 0:
-                        ar = []
-                        for key in o:
-                           ar.insert(key, o[key])
-                        o = ar
+                    if len([ key for key in o if isinstance(key, (str, unicode, float,  bool,  tuple))]) == 0:
+                        so = sorted([key for key in o])
+                        if isListIncreaseByOne(so):
+                            ar = []
+                            for key in o:
+                               ar.insert(key, o[key])
+                            o = ar
                     return o #or here
                 else:
                     if self.ch == ',':
@@ -168,7 +172,6 @@ class SLPP(object):
                     else:
                         k = self.value()
                         if self.ch == ']':
-                            numeric_keys = True
                             self.next_chr()
                     self.white()
                     ch = self.ch
@@ -179,7 +182,7 @@ class SLPP(object):
                             o[k] = self.value()
                         else:
                             o[idx] = k
-                        idx += 1
+                            idx += 1
                         k = None
         print ERRORS['unexp_end_table'] #Bad exit here
 
@@ -246,6 +249,15 @@ class SLPP(object):
             self.next_chr()
         return n
 
+def isListIncreaseByOne(lst):
+    length = len(lst)
+    if length == 0 or lst[0] != 0:
+        return False
+    for i in range(length):
+        if i + 1 < length:
+            if lst[i] + 1 != lst[i+1]:
+                return False
+    return True
 
 slpp = SLPP()
 

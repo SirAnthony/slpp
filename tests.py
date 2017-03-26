@@ -138,13 +138,42 @@ def table_test():
     >>> assert lua.decode('{[10] = 1}') == {10: 1}
 
     Void table:
-    >>> assert lua.decode('{nil}') == []
+    >>> assert lua.decode('{nil}') == {}
 
     Values-only table:
     >>> assert lua.decode('{"10"}') == ["10"]
 
     Last zero
     >>> assert lua.decode('{0, 1, 0}') == [0,1,0]
+    """
+    pass
+
+def mixed_table_test():
+    """
+    Mixed table 1:
+    >>> data = '{ 43, 54.3, false, string = "value", 9, [4] = 111, [1] = 222, [2.1] = "text" }'
+    >>> d = lua.decode(data)
+    >>> differ(d, lua.decode(lua.encode(d)))
+
+    Mixed table 2:
+    >>> data = '{ 43, 54.3, false, 9, [5] = 111, [7] = 222 }'
+    >>> d = lua.decode(data)
+    >>> differ(d, lua.decode(lua.encode(d)))
+
+    Mixed table 3:
+    >>> data = '{ [7] = 111, [5] = 222, 43, 54.3, false, 9 }'
+    >>> d = lua.decode(data)
+    >>> differ(d, lua.decode(lua.encode(d)))
+
+    Mixed table 4:
+    >>> data = '{ 43, 54.3, false, 9, [4] = 111, [5] = 52.1 }'
+    >>> d = lua.decode(data)
+    >>> differ(d, lua.decode(lua.encode(d)))
+
+    Mixed table 5:
+    >>> data = '{ [5] = 111, [4] = 52.1, 43, [3] = 54.3, false, 9 }'
+    >>> d = lua.decode(data)
+    >>> differ(d, lua.decode(lua.encode(d)))
     """
     pass
 
