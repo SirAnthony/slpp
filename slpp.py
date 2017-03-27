@@ -71,7 +71,7 @@ class SLPP(object):
             if tp is dict:
                 contents = []
                 for k, v in obj.iteritems():
-                    if type(k) is int:
+                    if isinstance(k, (int, long)):
                         if k == len(contents):
                             contents.append(self.__encode(v))
                         else:
