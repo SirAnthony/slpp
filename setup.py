@@ -10,4 +10,5 @@ setup(
     license='https://github.com/SirAnthony/slpp/blob/master/LICENSE',
     keywords=['lua'],
     py_modules=['slpp'],
+    install_requires=['six'],
 )
