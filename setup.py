@@ -10,7 +10,7 @@ setup(
     description='SLPP is a simple lua-python data structures parser',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    version='1.1',
+    version='1.2',
     author='SirAnthony',
     url='https://github.com/SirAnthony/slpp',
     license='https://github.com/SirAnthony/slpp/blob/master/LICENSE',
