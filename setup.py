@@ -8,8 +8,8 @@ with open(path.join(cur_dir, 'README.markdown'), encoding='utf-8') as f:
 setup(
     name='SLPP',
     description='SLPP is a simple lua-python data structures parser',
-    long_description=long_description
-    long_description_content_type='text/markdown'
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     version='1.1',
     author='SirAnthony',
     url='https://github.com/SirAnthony/slpp',
