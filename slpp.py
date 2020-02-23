@@ -12,6 +12,16 @@ ERRORS = {
     'mfnumber_sci': u'Malformed number (bad scientific format).',
 }
 
+def sequential(lst):
+    length = len(lst)
+    if length == 0 or lst[0] != 0:
+        return False
+    for i in range(length):
+        if i + 1 < length:
+            if lst[i] + 1 != lst[i+1]:
+                return False
+    return True
+
 
 class ParseError(Exception):
     pass
@@ -74,15 +84,9 @@ class SLPP(object):
             dp = tab * self.depth
             s += "%s{%s" % (tab * (self.depth - 2), newline)
             if isinstance(obj, dict):
-                contents = []
-                all_keys_int = all(isinstance(k, int) for k in obj.keys())
-                for k, v in obj.items():
-                    if all_keys_int:
-                        contents.append(self.__encode(v))
-                    else:
-                        contents.append(dp + '%s = %s' % (k, self.__encode(v)))
+                key = '[%s]' if all(isinstance(k, (int, long)) for k in obj.keys()) else '%s'
+                contents = [dp + (key + ' = %s') % (k, self.__encode(v)) for k, v in obj.items()]
                 s += (',%s' % newline).join(contents)
-
             else:
                 s += (',%s' % newline).join(
                     [dp + self.__encode(el) for el in obj])
@@ -161,11 +165,13 @@ class SLPP(object):
                     self.next_chr()
                     if k is not None:
                         o[idx] = k
-                    if not numeric_keys and len([key for key in o if isinstance(key, six.string_types + (float,  bool, tuple))]) == 0:
-                        ar = []
-                        for key in o:
-                            ar.insert(key, o[key])
-                        o = ar
+                    if len([key for key in o if isinstance(key, six.string_types + (float,  bool, tuple))]) == 0:
+                        so = sorted([key for key in o])
+                        if sequential(so):
+                            ar = []
+                            for key in o:
+                                ar.insert(key, o[key])
+                            o = ar
                     return o  # or here
                 else:
                     if self.ch == ',':
@@ -174,7 +180,6 @@ class SLPP(object):
                     else:
                         k = self.value()
                         if self.ch == ']':
-                            numeric_keys = True
                             self.next_chr()
                     self.white()
                     ch = self.ch

@@ -118,7 +118,7 @@ class TestSLPP(unittest.TestCase):
         self.assertEqual(slpp.decode('{[10] = 1}'), {10: 1})
 
         # Void table:
-        self.assertEqual(slpp.decode('{nil}'), [])
+        self.assertEqual(slpp.decode('{nil}'), {})
 
         # Values-only table:
         self.assertEqual(slpp.decode('{"10"}'), ["10"])
@@ -146,6 +146,16 @@ class TestSLPP(unittest.TestCase):
             self.assertEqual(slpp.encode(u'Привет'), '"Привет"')
         self.assertEqual(slpp.encode({'s': u'Привет'}), '{\n\ts = "Привет"\n}')
 
+    def test_consistency(self):
+        def t(data):
+            d = slpp.decode(data);
+            self.assertEqual(d, slpp.decode(slpp.encode(d)))
+        t('{ 43, 54.3, false, string = "value", 9, [4] = 111, [1] = 222, [2.1] = "text" }')
+        t('{ 43, 54.3, false, 9, [5] = 111, [7] = 222 }')
+        t('{ [7] = 111, [5] = 222, 43, 54.3, false, 9 }')
+        t('{ 43, 54.3, false, 9, [4] = 111, [5] = 52.1 }')
+        t('{ [5] = 111, [4] = 52.1, 43, [3] = 54.3, false, 9 }')
+        t('{ [1] = 1, [2] = "2", 3, 4, [5] = 5 }')
 
 if __name__ == '__main__':
     unittest.main()
