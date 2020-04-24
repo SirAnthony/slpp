@@ -14,7 +14,7 @@ setup(
     version='1.2',
     author='SirAnthony',
     url='https://github.com/SirAnthony/slpp',
-    license='https://github.com/SirAnthony/slpp/blob/master/LICENSE',
+    license='MIT',
     keywords=['lua'],
     py_modules=['slpp'],
     install_requires=['six'],
