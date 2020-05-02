@@ -84,8 +84,8 @@ class SLPP(object):
             dp = tab * self.depth
             s += "%s{%s" % (tab * (self.depth - 2), newline)
             if isinstance(obj, dict):
-                key = '[%s]' if all(isinstance(k, int) for k in obj.keys()) else '%s'
-                contents = [dp + (key + ' = %s') % (k, self.__encode(v)) for k, v in obj.items()]
+                key_list = ['[%s]' if isinstance(k, int) else '["%s"]' for k in obj.keys()]
+                contents = [dp + (key + ' = %s') % (k, self.__encode(v)) for (k, v), key in zip(obj.items(), key_list)]
                 s += (',%s' % newline).join(contents)
             else:
                 s += (',%s' % newline).join(
