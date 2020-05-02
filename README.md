@@ -1,6 +1,11 @@
 #### SLPP
 SLPP is a simple lua-python data structures parser.
 
+Install:
+```python
+pip install git+https://github.com/Igneous01/slpp
+```
+
 Lua data check:
 
 ```lua
