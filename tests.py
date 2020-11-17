@@ -126,12 +126,15 @@ class TestSLPP(unittest.TestCase):
         # Last zero
         self.assertEqual(slpp.decode('{0, 1, 0}'), [0, 1, 0])
 
+        # Mixed encode
+        self.assertEqual(slpp.encode({'0': 0, 'name': 'john'}), '{\n\t["0"] = 0,\n\t["name"] = "john"\n}')
+
     def test_string(self):
         # Escape test:
         self.assertEqual(slpp.decode(r"'test\'s string'"), "test's string")
 
         # Add escaping on encode:
-        self.assertEqual(slpp.encode({'a': 'func("call()");'}), '{\n\ta = "func(\\"call()\\");"\n}')
+        self.assertEqual(slpp.encode({'a': 'func("call()");'}), '{\n\t["a"] = "func(\\"call()\\");"\n}')
 
         # Strings inside double brackets
         longstr = ' ("word") . [ ["word"] . ["word"] . ("word" | "word" | "word" | "word") . ["word"] ] '
@@ -149,7 +152,7 @@ class TestSLPP(unittest.TestCase):
             self.assertEqual(slpp.encode(u'Привет'), '"\xd0\x9f\xd1\x80\xd0\xb8\xd0\xb2\xd0\xb5\xd1\x82"')
         if six.PY3:
             self.assertEqual(slpp.encode(u'Привет'), '"Привет"')
-        self.assertEqual(slpp.encode({'s': u'Привет'}), '{\n\ts = "Привет"\n}')
+        self.assertEqual(slpp.encode({'s': u'Привет'}), '{\n\t["s"] = "Привет"\n}')
 
     def test_consistency(self):
         def t(data):
