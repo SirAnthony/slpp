@@ -158,13 +158,17 @@ class TestSLPP(unittest.TestCase):
         t('{ [1] = 1, [2] = "2", 3, 4, [5] = 5 }')
 
     def test_comments(self):
-        lua = '-- starting comment\n{\n["multiline_string"] = "A multiline string where one of the lines starts with\n-- two dashes",\n-- middle comment\n["another_multiline_string"] = "A multiline string where one of the lines starts with\n-- two dashes\nfollowed by another line",\n["trailing_comment"] = "A string with" -- a trailing comment\n}\n-- ending comment'
-        dict = {
+        def t(data, res):
+            self.assertEqual(slpp.decode(data), res)
+        t('-- starting comment\n{\n["multiline_string"] = "A multiline string where one of the lines starts with\n-- two dashes",\n-- middle comment\n["another_multiline_string"] = "A multiline string where one of the lines starts with\n-- two dashes\nfollowed by another line",\n["trailing_comment"] = "A string with" -- a trailing comment\n}\n-- ending comment', {
             "multiline_string": "A multiline string where one of the lines starts with\n-- two dashes",
             "another_multiline_string": "A multiline string where one of the lines starts with\n-- two dashes\nfollowed by another line",
             "trailing_comment": "A string with"
-        }
-        self.assertEqual(slpp.decode(lua), dict)
+        })
+        t('"--3"', '--3')
+        t('{\n["string"] = "A text\n--[[with\ncomment]]\n",\n--[[\n["comented"] = "string\nnewline",\n]]}', {
+            'string': 'A text\n--[[with\ncomment]]\n'
+        })
 
 if __name__ == '__main__':
     unittest.main()

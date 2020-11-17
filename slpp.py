@@ -97,18 +97,26 @@ class SLPP(object):
                 self.next_chr()
             else:
                 break
+        self.comment()
 
-        self.skip_comments()
-
-    def skip_comments(self):
+    def comment(self):
         if self.ch == '-' and self.text[self.at] == '-':
-            # `--` is a comment, skip to next new line
+            self.next_chr()
+            # TODO: for fancy comments need to improve
+            multiline = self.next_chr() and self.ch == '[' and \
+                self.text[self.at] == '['
             while self.ch:
-                if re.match('\n', self.ch):
+                if multiline:
+                    if self.ch == ']' and self.text[self.at] == ']':
+                        self.next_chr()
+                        self.next_chr()
+                        self.white()
+                        break
+                # `--` is a comment, skip to next new line
+                elif re.match('\n', self.ch):
                     self.white()
                     break
-                else:
-                    self.next_chr()
+                self.next_chr()
 
     def next_chr(self):
         if self.at >= self.len:
