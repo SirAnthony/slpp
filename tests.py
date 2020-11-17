@@ -157,5 +157,14 @@ class TestSLPP(unittest.TestCase):
         t('{ [5] = 111, [4] = 52.1, 43, [3] = 54.3, false, 9 }')
         t('{ [1] = 1, [2] = "2", 3, 4, [5] = 5 }')
 
+    def test_comments(self):
+        lua = '-- starting comment\n{\n["multiline_string"] = "A multiline string where one of the lines starts with\n-- two dashes",\n-- middle comment\n["another_multiline_string"] = "A multiline string where one of the lines starts with\n-- two dashes\nfollowed by another line",\n["trailing_comment"] = "A string with" -- a trailing comment\n}\n-- ending comment'
+        dict = {
+            "multiline_string": "A multiline string where one of the lines starts with\n-- two dashes",
+            "another_multiline_string": "A multiline string where one of the lines starts with\n-- two dashes\nfollowed by another line",
+            "trailing_comment": "A string with"
+        }
+        self.assertEqual(slpp.decode(lua), dict)
+
 if __name__ == '__main__':
     unittest.main()

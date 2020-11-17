@@ -43,9 +43,6 @@ class SLPP(object):
     def decode(self, text):
         if not text or not isinstance(text, six.string_types):
             return
-        # FIXME: only short comments removed
-        reg = re.compile('--.*$', re.M)
-        text = reg.sub('', text, 0)
         self.text = text
         self.at, self.ch, self.depth = 0, '', 0
         self.len = len(text)
@@ -100,6 +97,18 @@ class SLPP(object):
                 self.next_chr()
             else:
                 break
+
+        self.skip_comments()
+
+    def skip_comments(self):
+        if self.ch == '-' and self.text[self.at] == '-':
+            # `--` is a comment, skip to next new line
+            while self.ch:
+                if re.match('\n', self.ch):
+                    self.white()
+                    break
+                else:
+                    self.next_chr()
 
     def next_chr(self):
         if self.at >= self.len:
