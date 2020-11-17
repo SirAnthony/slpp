@@ -133,6 +133,11 @@ class TestSLPP(unittest.TestCase):
         # Add escaping on encode:
         self.assertEqual(slpp.encode({'a': 'func("call()");'}), '{\n\ta = "func(\\"call()\\");"\n}')
 
+        # Strings inside double brackets
+        longstr = ' ("word") . [ ["word"] . ["word"] . ("word" | "word" | "word" | "word") . ["word"] ] '
+        self.assertEqual(slpp.decode('[['+longstr+']]'), longstr)
+        self.assertEqual(slpp.decode('{ [0] = [['+longstr+']], [1] = "a"}'), [longstr, "a"])
+
     def test_basic(self):
         # No data loss:
         data = '{ array = { 65, 23, 5 }, dict = { string = "value", array = { 3, 6, 4}, mixed = { 43, 54.3, false, string = "value", 9 } } }'

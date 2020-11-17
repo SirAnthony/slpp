@@ -100,14 +100,13 @@ class SLPP(object):
         self.comment()
 
     def comment(self):
-        if self.ch == '-' and self.text[self.at] == '-':
+        if self.ch == '-' and self.next_is('-'):
             self.next_chr()
             # TODO: for fancy comments need to improve
-            multiline = self.next_chr() and self.ch == '[' and \
-                self.text[self.at] == '['
+            multiline = self.next_chr() and self.ch == '[' and self.next_is('[')
             while self.ch:
                 if multiline:
-                    if self.ch == ']' and self.text[self.at] == ']':
+                    if self.ch == ']' and self.next_is(']'):
                         self.next_chr()
                         self.next_chr()
                         self.white()
@@ -117,6 +116,16 @@ class SLPP(object):
                     self.white()
                     break
                 self.next_chr()
+
+    def next_is(self, value):
+        if self.at >= self.len:
+            return False
+        return self.text[self.at] == value
+
+    def prev_is(self, value):
+        if self.at < 2:
+            return False
+        return self.text[self.at-2] == value
 
     def next_chr(self):
         if self.at >= self.len:
@@ -146,10 +155,13 @@ class SLPP(object):
         if end == '[':
             end = ']'
         if start in ['"',  "'",  '[']:
+            double = start=='[' and self.prev_is(start)
             while self.next_chr():
-                if self.ch == end:
+                if self.ch == end and (not double or self.next_is(end)):
                     self.next_chr()
                     if start != "[" or self.ch == ']':
+                        if double:
+                            self.next_chr()
                         return s
                 if self.ch == '\\' and start == end:
                     self.next_chr()
