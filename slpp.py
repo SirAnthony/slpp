@@ -145,7 +145,7 @@ class SLPP(object):
             self.next_chr()
         if self.ch in ['"',  "'",  '[']:
             return self.string(self.ch)
-        if self.ch.isdigit() or self.ch == '-':
+        if self.ch.isdigit() or self.ch == '-' or self.ch == '.':
             return self.number()
         return self.word()
 
@@ -242,6 +242,8 @@ class SLPP(object):
                 raise ParseError(err)
             return n
         n = ''
+        if self.ch == '.':
+            n += '0'
         try:
             if self.ch == '-':
                 n += next_digit(ERRORS['mfnumber_minus'])
