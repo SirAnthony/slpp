@@ -129,6 +129,9 @@ class TestSLPP(unittest.TestCase):
         # Mixed encode
         self.assertEqual(slpp.encode({'0': 0, 'name': 'john'}), '{\n\t["0"] = 0,\n\t["name"] = "john"\n}')
 
+        # Escape string keys
+        self.assertEqual(slpp.encode({'string with "quote"': 1}), '{\n\t["string with \\"quote\\""] = 1\n}')
+
     def test_string(self):
         # Escape test:
         self.assertEqual(slpp.decode(r"'test\'s string'"), "test's string")
