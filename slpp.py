@@ -197,10 +197,7 @@ class SLPP(object):
                     if len([key for key in o if isinstance(key, six.string_types + (float,  bool, tuple))]) == 0:
                         so = sorted([key for key in o])
                         if sequential(so):
-                            ar = []
-                            for key in o:
-                                ar.insert(key, o[key])
-                            o = ar
+                            o = [o[key] for key in so]
                     return o  # or here
                 else:
                     if self.ch == ',':
