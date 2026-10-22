@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+from itertools import permutations
 import six
 
 from slpp import slpp
@@ -128,6 +129,20 @@ class TestSLPP(unittest.TestCase):
 
         # Mixed encode
         self.assertEqual(slpp.encode({'0': 0, 'name': 'john'}), '{\n\t["0"] = 0,\n\t["name"] = "john"\n}')
+
+    def test_table_numeric_key_order(self):
+        fields = ('[0] = 10', '[1] = 20', '[2] = 30')
+        for order in permutations(fields):
+            data = '{' + ', '.join(order) + '}'
+            self.assertEqual(slpp.decode(data), [10, 20, 30], data)
+
+    def test_table_sparse_numeric_keys(self):
+        self.assertEqual(slpp.decode('{[2] = 30, [0] = 10}'),
+                         {0: 10, 2: 30})
+
+    def test_table_mixed_keys(self):
+        self.assertEqual(slpp.decode('{[1] = 20, name = "test", [0] = 10}'),
+                         {0: 10, 1: 20, 'name': 'test'})
 
     def test_string(self):
         # Escape test:
